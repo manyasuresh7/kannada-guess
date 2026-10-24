@@ -17,6 +17,9 @@ let results = []; // one emoji per guess: 🟥 wrong, 🟩 correct
 // The day your game "starts". Months start at 0, so 9 = October.
 const LAUNCH_DATE = Date.UTC(2026, 9, 24);
 
+// Your game's web address (added to the share text)
+const SITE_URL = "https://manyasuresh7.github.io/kannada-guess/";
+
 // Names we save our data under in the browser
 const STORAGE_KEY = "kannadaGuessState";
 const STATS_KEY = "kannadaGuessStats";
@@ -56,6 +59,26 @@ function getYesterdayKey() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
   return makeDateKey(d);
+}
+
+// ---------- Comparing guesses ----------
+
+// Lowercase, and keep only letters and numbers (works for Kannada script too)
+function normalize(text) {
+  return text.toLowerCase().replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+// True if the guess matches the answer or any alias
+function isCorrect(guess) {
+  const g = normalize(guess);
+  if (g === "") return false;
+
+  const accepted = [movie.answer].concat(movie.aliases || []);
+
+  for (const name of accepted) {
+    if (normalize(name) === g) return true;
+  }
+  return false;
 }
 
 // ---------- Saving today's game ----------
@@ -170,6 +193,7 @@ function showStats() {
 // Builds the text that gets copied, like:
 // Kannada Guess #1 3/5
 // 🟥🟥🟩⬜⬜
+// https://your-site-link
 function buildShareText() {
   const total = movie.hints.length;
 
@@ -180,7 +204,7 @@ function buildShareText() {
 
   const score = status === "won" ? results.length + "/" + total : "X/" + total;
 
-  return "Kannada Guess #" + getPuzzleNumber() + " " + score + "\n" + grid;
+  return "Kannada Guess #" + getPuzzleNumber() + " " + score + "\n" + grid + "\n" + SITE_URL;
 }
 
 async function handleShare() {
@@ -274,7 +298,7 @@ function handleGuess() {
     return;
   }
 
-  if (guess.toLowerCase() === movie.answer.toLowerCase()) {
+  if (isCorrect(guess)) {
     results.push("🟩");
     status = "won";
     messageP.textContent = "Correct! The movie is " + movie.answer + " 🎉";
