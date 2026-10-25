@@ -99,3 +99,87 @@ h1 {
     width: 100%;
   }
 }
+#help-button {
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #f5c518;
+  background: transparent;
+  color: #f5c518;
+  cursor: pointer;
+}
+
+#help-dialog {
+  background-color: #16213e;
+  color: #ffffff;
+  border: 2px solid #f5c518;
+  border-radius: 10px;
+  padding: 20px;
+  max-width: 420px;
+  width: calc(100% - 32px);
+  text-align: left;
+}
+
+#help-dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+#help-dialog h2 {
+  margin-top: 0;
+  color: #f5c518;
+}
+
+#help-dialog li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+#close-help {
+  display: block;
+  margin: 16px auto 0;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #f5c518;
+  cursor: pointer;
+}
+#back-link {
+  display: block;
+  text-align: left;
+  color: #f5c518;
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+#categories {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tile {
+  display: block;
+  padding: 18px;
+  font-size: 1.2rem;
+  border-radius: 10px;
+  background-color: #16213e;
+  color: #ffffff;
+  text-decoration: none;
+  border: 2px solid #f5c518;
+}
+
+a.tile:hover {
+  background-color: #1f2f55;
+}
+
+.tile.disabled {
+  border-color: #444a66;
+  color: #8a8fa8;
+}
+
+.tile small {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
