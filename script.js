@@ -1,4 +1,25 @@
+// ---------- Which category are we playing? ----------
+
+// Each category has its own title, data file and wording
+const CATEGORIES = {
+  movies: {
+    title: "Guess the Kannada Movie",
+    label: "Movies",
+    file: "data/movies.json",
+    placeholder: "Type a movie name"
+  }
+};
+
+// Read the category from the web address, like game.html?cat=movies
+const params = new URLSearchParams(window.location.search);
+let category = params.get("cat");
+if (!Object.hasOwn(CATEGORIES, category)) {
+  category = "movies"; // unknown or missing: fall back to movies
+}
+const config = CATEGORIES[category];
+
 // Grab all the page elements first
+const titleEl = document.getElementById("title");
 const hintsDiv = document.getElementById("hints");
 const attemptsP = document.getElementById("attempts");
 const guessInput = document.getElementById("guess-input");
@@ -7,8 +28,13 @@ const messageP = document.getElementById("message");
 const statsDiv = document.getElementById("stats");
 const shareButton = document.getElementById("share-button");
 
+// Set the page text for this category
+document.title = config.title;
+titleEl.textContent = config.title;
+guessInput.placeholder = config.placeholder;
+
 // Game state (filled in after the puzzle loads)
-let movie;
+let movie; // the puzzle for today (any category)
 let currentHint = 0;
 let attemptsLeft = 0;
 let status = "playing"; // "playing", "won" or "lost"
@@ -20,9 +46,11 @@ const LAUNCH_DATE = Date.UTC(2026, 9, 24);
 // Your game's web address (added to the share text)
 const SITE_URL = "https://manyasuresh7.github.io/kannada-guess/";
 
-// Names we save our data under in the browser
-const STORAGE_KEY = "kannadaGuessState";
-const STATS_KEY = "kannadaGuessStats";
+// Each category saves under its own names, so stats don't mix.
+// Movies keeps the old names, so your existing stats survive.
+const KEY_SUFFIX = category === "movies" ? "" : "_" + category;
+const STORAGE_KEY = "kannadaGuessState" + KEY_SUFFIX;
+const STATS_KEY = "kannadaGuessStats" + KEY_SUFFIX;
 
 // How many whole days have passed since launch
 function getDaysSinceLaunch() {
@@ -191,7 +219,7 @@ function showStats() {
 // ---------- Sharing ----------
 
 // Builds the text that gets copied, like:
-// Kannada Guess #1 3/5
+// Kannada Guess (Movies) #1 3/5
 // 🟥🟥🟩⬜⬜
 // https://your-site-link
 function buildShareText() {
@@ -204,7 +232,7 @@ function buildShareText() {
 
   const score = status === "won" ? results.length + "/" + total : "X/" + total;
 
-  return "Kannada Guess #" + getPuzzleNumber() + " " + score + "\n" + grid + "\n" + SITE_URL;
+  return "Kannada Guess (" + config.label + ") #" + getPuzzleNumber() + " " + score + "\n" + grid + "\n" + SITE_URL;
 }
 
 async function handleShare() {
@@ -230,12 +258,12 @@ async function loadGame() {
   showStats();
 
   try {
-    const response = await fetch("data/movies.json");
-    const movies = await response.json();
+    const response = await fetch(config.file);
+    const puzzles = await response.json();
 
-    const index = getPuzzleIndex(movies.length);
-    console.log("Today's puzzle index:", index);
-    movie = movies[index];
+    const index = getPuzzleIndex(puzzles.length);
+    console.log("Category:", category, "| Today's puzzle index:", index);
+    movie = puzzles[index];
     attemptsLeft = movie.hints.length;
 
     // Restore today's progress if there is any
@@ -252,10 +280,10 @@ async function loadGame() {
 
     // If the game already ended today, show the result and lock it
     if (status === "won") {
-      messageP.textContent = "Correct! The movie is " + movie.answer + " 🎉";
+      messageP.textContent = "Correct! The answer is " + movie.answer + " 🎉";
       endGame();
     } else if (status === "lost") {
-      messageP.textContent = "Game over! The movie was " + movie.answer + ".";
+      messageP.textContent = "Game over! The answer was " + movie.answer + ".";
       endGame();
     }
   } catch (error) {
@@ -301,7 +329,7 @@ function handleGuess() {
   if (isCorrect(guess)) {
     results.push("🟩");
     status = "won";
-    messageP.textContent = "Correct! The movie is " + movie.answer + " 🎉";
+    messageP.textContent = "Correct! The answer is " + movie.answer + " 🎉";
     endGame();
     recordResult(true);
     showStats();
@@ -313,7 +341,7 @@ function handleGuess() {
 
     if (attemptsLeft === 0) {
       status = "lost";
-      messageP.textContent = "Game over! The movie was " + movie.answer + ".";
+      messageP.textContent = "Game over! The answer was " + movie.answer + ".";
       endGame();
       recordResult(false);
       showStats();
@@ -336,3 +364,27 @@ guessInput.addEventListener("keydown", function (event) {
 });
 
 loadGame();
+
+// ---------- How to play popup ----------
+const helpButton = document.getElementById("help-button");
+const helpDialog = document.getElementById("help-dialog");
+const closeHelp = document.getElementById("close-help");
+const SEEN_HELP_KEY = "kannadaGuessSeenHelp";
+
+helpButton.addEventListener("click", function () {
+  helpDialog.showModal();
+});
+
+closeHelp.addEventListener("click", function () {
+  helpDialog.close();
+});
+
+// Show the popup automatically on a visitor's very first visit
+try {
+  if (!localStorage.getItem(SEEN_HELP_KEY)) {
+    helpDialog.showModal();
+    localStorage.setItem(SEEN_HELP_KEY, "yes");
+  }
+} catch (error) {
+  console.error(error);
+}
