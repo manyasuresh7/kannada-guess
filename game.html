@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kannada Guess</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a id="back-link" href="index.html">← All categories</a>
+  <h1 id="title">Guess the Kannada Movie</h1>
+  <button id="help-button">How to play</button>
+
+  <div id="hints"></div>
+  <p id="attempts"></p>
+
+  <div id="guess-row">
+    <input type="text" id="guess-input" placeholder="Type your guess">
+    <button id="guess-button">Guess</button>
+  </div>
+
+  <p id="message"></p>
+  <button id="share-button" hidden>Share result</button>
+  <div id="stats"></div>
+
+  <dialog id="help-dialog">
+    <h2>How to play</h2>
+    <ul>
+      <li>Guess today's puzzle in 5 tries.</li>
+      <li>You start with one hint. Each wrong guess reveals another.</li>
+      <li>A new puzzle arrives every day.</li>
+      <li>Share your result with friends. It doesn't reveal the answer.</li>
+    </ul>
+    <button id="close-help">Got it</button>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
