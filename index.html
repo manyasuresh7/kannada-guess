@@ -7,20 +7,14 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Guess the Kannada Movie</h1>
+  <h1>Kannada Guess</h1>
+  <p>A new puzzle every day. Pick a category.</p>
 
-  <div id="hints"></div>
-  <p id="attempts"></p>
-
-  <div id="guess-row">
-  <input type="text" id="guess-input" placeholder="Type a movie name">
-  <button id="guess-button">Guess</button>
-</div>
-
-  <p id="message"></p>
-  <button id="share-button" hidden>Share result</button>
-  <div id="stats"></div>
-
-  <script src="script.js"></script>
+  <div id="categories">
+    <a class="tile" href="game.html?cat=movies">🎬 Movies</a>
+    <span class="tile disabled">🎭 Actors <small>Coming soon</small></span>
+    <span class="tile disabled">🎬 Directors <small>Coming soon</small></span>
+    <span class="tile disabled">🎵 Songs <small>Coming soon</small></span>
+  </div>
 </body>
 </html>
